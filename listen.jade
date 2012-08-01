@@ -1,0 +1,15 @@
+!!!
+html
+  script= podcoin.scriptHead
+body
+  h1 Hi, welcome to Podcoin
+  h2 You are viewing episode #{podcoin.ep.number}
+  h3= podcoin.ep.title
+  #container
+    #player
+      p= podcoin.scriptBody
+      p streaming player goes here
+    #controls
+      p= podcoin.scriptBodyDash
+      p controls go here
+    a(href=podcoin.ep.URL) download mp3

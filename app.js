@@ -4,29 +4,29 @@ var express = require('express');
 var app = module.exports = express.createServer();
 
 //we will store server state in app.podcoin for now
-app.podcoin={};
+app.podcoin = {};
+  app.podcoin.data = {};
+    app.podcoin.data.episodes = {};
+      app.podcoin.data.episodes.coinbase004 =
+      { 
+        title:"Coinbase 004: Sex, Drugs, Booty",
+        id:'coinbase004',
+        number:'004',
+        URL:"http://library.agoristradio.com/library/coinbase/coinbase-EP004.mp3",
+      };
 
-app.podcoin.data={
-  episodes = 
-  [ coinbase004: { 
-      episodeTitle:"Coinbase 004: Sex, Drugs, Booty",
-      episodeID:'coinbase004',
-      episodeNumber:'004',
-      episodeURL:"http://library.agoristradio.com/library/coinbase/coinbase-EP004.mp3",
-      scriptHead: "alert('avaderp kevadra')",
-      scriptBody: "",
-    },
-    stats = 
+    app.podcoin.data.stats =
     {
       mp3downloads:0,
       streamStarted:0,
       streamCompleted:0
-    }
-  ],
-  coinbase005: null,
-    ],
-  client:{},    // we build this for each request and pass to jade
-};
+    };
+
+    app.podcoin.data.client=    // we build this for each request and pass to jade
+    {
+      scriptHead: "alert('avaderp kevadra')",
+      scriptBody: "",
+    };
 
 
 
@@ -35,6 +35,7 @@ app.podcoin.data={
 app.configure(function(){
   app.set('views', __dirname);
   app.set('view engine', 'jade');
+  app.set('view options', {layout:false});
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
@@ -46,28 +47,38 @@ app.configure(function(){
 // Routes
 // var  = require('./routes');
 
-app.get('/coinbase/listen/:id', function(req, res){
+app.get('/listen/:id', function(req, res){
   var id = req.params.id;
   var tmp = app.podcoin.data.client;
-  tmp.episode = app.podcoin.getEpisode(id);
-  tmp.user = null;
-
-  res.render('stream.jade', {podcoin: tmp});
-
+  tmp.ep = app.podcoin.getEp(id);
+  console.log('url:: '+tmp.ep.URL);
+  if(tmp.ep == null){
+    res.send(404);
+  } else {
+    tmp.user = null;
+    res.render('listen.jade', {podcoin: tmp});
+  };
+});
+app.get('/*', function(req, res){
+  res.send('<html><a href=/listen/coinbase004>episode 4</a></html>');
 });
 
 app.podcoin.getEp = function(id){
-  return(app.podcoin.data.episodes[toString(id)]);
+  tmp = app.podcoin.data.episodes[id];
+  if(tmp == null || tmp == undefined || tmp == '') {
+    return null;
+  } else {
+    return tmp;
+  };
 };
 
 app.podcoin.newEp = function(){
   return {
-    episodeTitle:"",
-    episodeNumber:null,
-    episodeURL:null,
-    scriptHead: "",
-    scriptBody: "",
-  },
+    title:'',
+    id:'',
+    number:null,
+    URL:null,
+  };
 };
 
 app.configure('development', function(){
@@ -78,4 +89,5 @@ app.configure('production', function(){
 });
 
 app.listen(3000);
-console.log("Hit me up. %d in %s mode", app.address().port, app.settings.env);
+console.log('listening on 3000');
+//console.log("Hit me up. %d in %s mode", app.address().port, app.settings.env);
