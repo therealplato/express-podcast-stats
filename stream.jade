@@ -1,0 +1,13 @@
+!!!
+html
+  script= podcoin.scriptHead
+body
+  h1 Hi, welcome to Podcoin
+  h2 You are viewing episode #{podcoin.episodeNumber}
+  h3= podcoin.episodeTitle
+  #container
+    #player
+      p= podcoin.scriptBody
+    #controls
+      p= podcoin.scriptBodyDash
+      
